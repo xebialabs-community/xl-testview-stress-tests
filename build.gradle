@@ -1,0 +1,6 @@
+allprojects { Project p ->
+  group = "com.xebialabs.xltest"
+
+  apply plugin: "eclipse"
+  apply plugin: "idea"
+}

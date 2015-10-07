@@ -1,0 +1,58 @@
+apply plugin: 'scala'
+apply plugin: 'application'
+
+repositories {
+  maven { url "http://repository.excilys.com/content/groups/public" }
+  mavenCentral()
+}
+
+ext {
+  SCALA_VERSION = "2.11.6"
+  GATLING_VERSION = "2.1.4"
+}
+
+dependencies {
+  compile "org.scala-lang:scala-library:${SCALA_VERSION}"
+  compile "io.gatling.highcharts:gatling-charts-highcharts:${GATLING_VERSION}"
+  compile "io.gatling:gatling-app:${GATLING_VERSION}"
+  compile "io.gatling:gatling-http:${GATLING_VERSION}"
+  compile "io.gatling:gatling-core:${GATLING_VERSION}"
+  compile "io.gatling:gatling-jdbc:${GATLING_VERSION}"
+  compile "io.gatling:gatling-recorder:${GATLING_VERSION}"
+  compile 'joda-time:joda-time:2.1'
+  compile 'org.joda:joda-convert:1.2'
+
+  compile 'org.scalatest:scalatest_2.11:2.2.4'
+  compile 'com.typesafe.scala-logging:scala-logging_2.11:3.1.0'
+  compile 'ch.qos.logback:logback-parent:1.1.2'
+}
+
+mainClassName = "stress.utils.GatlingRunner"
+
+def maxResponseSeconds = project.hasProperty("maxResponseSeconds") ? Integer.parseInt(project.maxResponseSeconds) : 300
+def myJvmArgs = [
+  '-Xmx4g',
+  '-Xms1g',
+  '-Xss1m',
+  '-XX:MaxPermSize=256M',
+  "-Dgatling.http.ahc.requestTimeout=${maxResponseSeconds * 1000}",
+  "-Dgatling.http.ahc.readTimeout=${maxResponseSeconds * 1000}",
+  "-Dgatling.http.ahc.connectTimeout=${maxResponseSeconds * 1000}"
+]
+
+['baseUrl', 'simulation', 'users', 'teams', 'ops', 'releaseManagers', 'username', 'password', 'sshHost', 'sshUser', 'sshPassword'].each {
+  if (project.hasProperty(it)) {
+    myJvmArgs.add("-D$it=${project.property(it)}")
+  }
+}
+
+run {
+  jvmArgs myJvmArgs
+  args '-rf', file('reports')
+}
+
+task cleanSimulations(type: Delete) {
+  delete 'reports'
+}
+
+clean.dependsOn('cleanSimulations')

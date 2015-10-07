@@ -1,0 +1,17 @@
+{
+    "title": "My release created by Gatling",
+    "description": "Release created during gatling performance test",
+    "owner": {
+        "username": "admin",
+        "fullName": "XL Release Administrator"
+    },
+    "scheduledStartDate": "2014-10-21T07:00:00.000Z",
+    "dueDate": "2014-10-21T15:00:00.000Z",
+    "plannedDuration": null,
+    "variables": [],
+    "tags": ["Performance"],
+    "flag": {
+        "status": "OK",
+        "comment": "Gatling Flag"
+    }
+}
