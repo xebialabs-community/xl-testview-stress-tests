@@ -1,4 +1,4 @@
-package com.xebialabs.xlrelease
+package com.xebialabs.xltest
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar

@@ -1,13 +1,10 @@
-package com.xebialabs.xlrelease
+package com.xebialabs.xltest
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigFactory.parseResources
 import com.typesafe.scalalogging.LazyLogging
-import com.xebialabs.xlrelease.client.XltClient
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.util.Failure
+import com.xebialabs.xltest.client.XltClient
+import com.xebialabs.xltest.generator.TestSpecificationGenerator
 
 object Main extends App with LazyLogging {
 
@@ -31,7 +28,8 @@ object Main extends App with LazyLogging {
 //
 //  val specialDaysFuture = client.createCis(SpecialDayGenerator.generateSpecialDays())
 //
-//  val releaseGenerator = new ReleasesGenerator()
+  val releaseGenerator = new TestSpecificationGenerator()
+
 //  val dependantReleaseFuture = client.createCis(releaseGenerator.generateDependentRelease())
 //  val allReleasesFuture = dependantReleaseFuture.flatMap(_ => {
 //    // Creating some content to increase repository size

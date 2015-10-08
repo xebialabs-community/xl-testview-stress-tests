@@ -13,6 +13,7 @@ ext {
 
 dependencies {
   compile "org.scala-lang:scala-library:${SCALA_VERSION}"
+  compile 'org.scala-lang:scala-xml:2.11.0-M4'
   compile "io.gatling.highcharts:gatling-charts-highcharts:${GATLING_VERSION}"
   compile "io.gatling:gatling-app:${GATLING_VERSION}"
   compile "io.gatling:gatling-http:${GATLING_VERSION}"

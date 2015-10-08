@@ -1,6 +1,4 @@
-package com.xebialabs.xlrelease
-
-import org.threeten.bp.{LocalDateTime, ZoneId, ZonedDateTime}
+package com.xebialabs.xltest
 
 import scala.language.implicitConversions
 
@@ -20,34 +18,36 @@ package object domain {
 
   trait BaseTestSpecification extends Ci {
     def id: String
-
     def title: String
-
     def qualificationType: String
   }
 
+  case class CompleteProject(project: Project,
+                             testSpecifications: Seq[BaseTestSpecification])
+
   case class Project(id: String,
                      title: String,
+                     name: Option[String] = None,
                      `type`: String = "xlt.Project") extends Ci
 
-  case class PassiveTestSpecification(id: String,
-                                      title: String,
-                                      qualificationType: String,
+  case class PassiveTestSpecification(override val id: String,
+                                      override val title: String,
+                                      override val qualificationType: String,
                                       testToolName: String,
                                       `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
 
-  case class ActiveTestSpecification(id: String,
-                                     title: String,
-                                     qualificationType: String,
+  case class ActiveTestSpecification(override val id: String,
+                                     override val title: String,
+                                     override val qualificationType: String,
                                      testToolName: String,
                                      searchPattern: String,
                                      workingDirectory: String,
                                      host: String,
                                      `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
 
-  case class ExecutableTestSpecification(id: String,
-                                         title: String,
-                                         qualificationType: String,
+  case class ExecutableTestSpecification(override val id: String,
+                                         override val title: String,
+                                         override val qualificationType: String,
                                          testToolName: String,
                                          searchPattern: String,
                                          workingDirectory: String,
@@ -56,4 +56,5 @@ package object domain {
                                          timeOut: Int,
                                          scriptLocation: String,
                                          `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
+
 }
