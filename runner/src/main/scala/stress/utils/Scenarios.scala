@@ -14,4 +14,6 @@ object Scenarios {
     .exec(Projects.create)
 
   val importTestSpecData = scenario("Import data").exec(JunitGradle.importTestData)
+
+  val browseDashboards = scenario("Browse dashboards").exec(Dashboards.browse)
 }

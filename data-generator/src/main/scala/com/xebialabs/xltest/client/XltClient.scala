@@ -79,7 +79,6 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
 
   def findProject(title: String): Future[HttpResponse] = strictPipeline(Get(projectUri withQuery ("title" -> title)))
 
-
   def createTestSpecification(specification: ExecutableTestSpecification, projectName: String): Future[HttpResponse] = strictPipeline(
     Post(s"$apiUrl/api/internal/projects/$projectName/testspecifications", specification))
 
@@ -96,7 +95,7 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
     val f = createProject(cp.project)
 
     val tsFuture = f flatMap {
-      case hp: HttpResponse => {
+      case hp: HttpResponse =>
         val project = hp.entity.as[Project].right.get
         val id = project.name.get
         val tsCreationFutures: Seq[Future[HttpResponse]] = cp.testSpecifications.map {
@@ -106,9 +105,9 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
         }
 
         Future.sequence(tsCreationFutures)
-      }
     }
     tsFuture
   }
 
+  def listDashboards(): Future[HttpResponse] = strictPipeline(Get(s"$apiUrl/api/internal/dashboards"))
 }

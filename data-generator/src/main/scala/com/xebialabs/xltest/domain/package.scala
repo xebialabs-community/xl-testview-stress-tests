@@ -18,14 +18,16 @@ package object domain {
 
   trait BaseTestSpecification extends Ci {
     def id: String
+
     def title: String
+
     def qualificationType: String
   }
 
   case class CompleteProject(project: Project,
                              testSpecifications: Seq[BaseTestSpecification])
 
-  case class Project(id: String,
+  case class Project(id: String = "--",
                      title: String,
                      name: Option[String] = None,
                      `type`: String = "xlt.Project") extends Ci
@@ -56,5 +58,25 @@ package object domain {
                                          timeOut: Int,
                                          scriptLocation: String,
                                          `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
+
+  case class Dashboard(title: String,
+                       name: Option[String] = None,
+                       dashboardTiles: Seq[DashboardTile] = List.empty,
+                       id: String = "---",
+                       autoReloadInterval: Int = 60,
+                       `type`: String = "xlt.Dashboard") extends Ci
+
+  case class DashboardTile(id: String = "---",
+                           x: Int,
+                           y: Int,
+                           w: Int,
+                           h: Int,
+                           reportIcon: String,
+                           title: String,
+                           testSpecification: String,
+                           reportType: String,
+                           reportName: String,
+                           `type`: String = "xlt.DashboardTile",
+                           showCaseDate: Boolean = false) extends Ci
 
 }
