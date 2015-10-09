@@ -1,19 +1,18 @@
 package stress.chain
 
-import java.nio.file.{Path, Paths}
+import java.nio.file.{Files, Path}
 
+import generator.Generator
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import stress.utils.{XmlOMatic, FileUtils}
+import stress.utils.{FileUtils, XmlOMatic}
 
-import scala.util.Random
-import scala.xml.transform.{RuleTransformer, RewriteRule}
-import scala.xml.{Node, Elem}
+import scala.collection.JavaConverters._
+import scala.xml.{Elem, Node}
 
 object JunitGradle {
 
   val basicTemplate: Elem = scala.xml.XML.load(getClass.getResource("/TEST-com.xebialabs.xltest.reference.JunitReference.xml"))
-
   val metadata =
     """{
     "source": "jenkins",
@@ -31,20 +30,26 @@ object JunitGradle {
   }
     """
 
-  val testSpecFeeder = Iterator.continually(Map("testSpecId" -> "95331eb4-5536-4e75-a11c-57adb0ae2541"))
+  val testSpecFeeder = Iterator.continually(Map("testSpecId" -> "40758f33-8aa0-4cc5-9cc4-ee37a73e2740"))
 
   val testResultFeeder = Iterator.continually(Map("filename" -> {
-    val xml = XmlOMatic.updateTime(basicTemplate)
-    val path: Path = FileUtils.saveXml(xml)
-    val zip: Path = FileUtils.zip(List(path))
+    val data: List[Path] = Generator.createTestData(10, 1, null).asScala.toList
+    val updatedXml: List[List[Node]] = data.map(dir => {
+      val xmlFiles: List[Path] = Files.newDirectoryStream(dir).asScala.toList
+      val xmlNodes: List[Node] = xmlFiles.map(f => scala.xml.XML.load(Files.newInputStream(f)))
+      xmlNodes.map(xmlNode => XmlOMatic.updateTime(xmlNode))
+    })
 
-    zip.toAbsolutePath.toString
+    val listOfZips: List[Path] = updatedXml.map(f => FileUtils.zip(f.map(g => FileUtils.saveXml(g))))
+
+    listOfZips.head.toAbsolutePath.toString
   }))
 
   def importTestData = {
     feed(testSpecFeeder).feed(testResultFeeder)
       .exec(http("Run import")
-        .post("/api/internal/import/${testSpecId}").header("Content-Type", "multipart/mixed")
+        .post("/api/internal/import/${testSpecId}")
+        .header("Content-Type", "multipart/mixed")
         .bodyPart(StringBodyPart("metadata", metadata).contentType("application/json"))
         .bodyPart(RawFileBodyPart("test-results.zip", "${filename}").contentType("application/zip")))
   }

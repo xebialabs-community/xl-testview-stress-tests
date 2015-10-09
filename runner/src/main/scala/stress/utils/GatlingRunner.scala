@@ -3,7 +3,7 @@ package stress.utils
 import com.typesafe.scalalogging.LazyLogging
 import io.gatling.app.Gatling
 import io.gatling.core.scenario.Simulation
-import stress.simulations.DashboardSimulation
+import stress.simulations.{ImportSimulation, DashboardSimulation}
 import stress.ProjectSimulation
 
 import scala.util.{Failure, Success, Try}
@@ -19,7 +19,7 @@ object GatlingRunner extends App with LazyLogging {
   logger.info("Starting XL stress tests suite.")
 
   private val simulationProvValue = Option(System.getProperty(simulationPropKey))
-    .getOrElse(classOf[DashboardSimulation].getCanonicalName)
+    .getOrElse(classOf[ImportSimulation].getCanonicalName)
 
   private val simulationsToRun = simulationProvValue
     .split(",")
