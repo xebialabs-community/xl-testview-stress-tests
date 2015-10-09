@@ -32,21 +32,10 @@ object JunitGradle {
 
   val testSpecFeeder = Iterator.continually(Map("testSpecId" -> "40758f33-8aa0-4cc5-9cc4-ee37a73e2740"))
 
-  val testResultFeeder = Iterator.continually(Map("filename" -> {
-    val data: List[Path] = Generator.createTestData(10, 1, null).asScala.toList
-    val updatedXml: List[List[Node]] = data.map(dir => {
-      val xmlFiles: List[Path] = Files.newDirectoryStream(dir).asScala.toList
-      val xmlNodes: List[Node] = xmlFiles.map(f => scala.xml.XML.load(Files.newInputStream(f)))
-      xmlNodes.map(xmlNode => XmlOMatic.updateTime(xmlNode))
-    })
 
-    val listOfZips: List[Path] = updatedXml.map(f => FileUtils.zip(f.map(g => FileUtils.saveXml(g))))
-
-    listOfZips.head.toAbsolutePath.toString
-  }))
 
   def importTestData = {
-    feed(testSpecFeeder).feed(testResultFeeder)
+    feed(testSpecFeeder)
       .exec(http("Run import")
         .post("/api/internal/import/${testSpecId}")
         .header("Content-Type", "multipart/mixed")

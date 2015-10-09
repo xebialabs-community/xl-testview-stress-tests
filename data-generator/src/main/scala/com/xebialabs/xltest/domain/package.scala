@@ -27,15 +27,15 @@ package object domain {
   case class CompleteProject(project: Project,
                              testSpecifications: Seq[BaseTestSpecification])
 
-  case class Project(id: String = "--",
-                     title: String,
+  case class Project(title: String,
+                     id: String = "--",
                      name: Option[String] = None,
                      `type`: String = "xlt.Project") extends Ci
 
-  case class PassiveTestSpecification(override val id: String,
-                                      override val title: String,
+  case class PassiveTestSpecification(override val title: String,
                                       override val qualificationType: Option[String],
                                       testToolName: String,
+                                      override val id: String = "---",
                                       `type`: String = "xlt.PassiveTestSpecification",
                                       hasRuns: Boolean = false,
                                       importable: Boolean = false,

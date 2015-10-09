@@ -59,7 +59,7 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
       createdProject.name shouldBe defined
       val projectName = createdProject.name.get
 
-      val specification: PassiveTestSpecification = new PassiveTestSpecification("---", "Test Spec A", Some("xlt.DefaultFunctionalTestsQualifier"), "xlt.JUnit")
+      val specification: PassiveTestSpecification = new PassiveTestSpecification( "Test Spec A", Some("xlt.DefaultFunctionalTestsQualifier"), "xlt.JUnit")
       val createdResponse2 = client.createTestSpecification(specification, projectName).futureValue
       createdResponse2.status shouldBe StatusCodes.Created
 
