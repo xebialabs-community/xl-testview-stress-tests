@@ -1,6 +1,9 @@
 apply plugin: 'scala'
 apply plugin: 'application'
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 repositories {
   maven { url "http://repository.excilys.com/content/groups/public" }
   mavenCentral()
