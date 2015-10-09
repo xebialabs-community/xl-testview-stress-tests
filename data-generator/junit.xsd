@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:ben="http://databene.org/benerator-0.7.0.xsd" 
+    xmlns="http://myCompany/myProduct/mySchema-version.xsd" 
+    targetNamespace="http://myCompany/myProduct/mySchema-version.xsd" 
+    elementFormDefault="qualified">
+
+    <xs:element name="failure">
+        <xs:complexType mixed="true">
+            <xs:attribute name="type" type="xs:string" use="optional"/>
+            <xs:attribute name="message" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="error">
+        <xs:complexType mixed="true">
+            <xs:attribute name="type" type="xs:string" use="optional"/>
+            <xs:attribute name="message" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="properties">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="property" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="property">
+        <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="value" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+<!--
+    <xs:simpleType name="tsGen">
+        <xs:annotation>
+            <xs:appinfo>
+                <ben:type generator="org.databene.benerator.primitive.datetime.CurrentDateTimeGenerator"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="30" />
+        </xs:restriction>
+    </xs:simpleType>
+-->
+    <xs:element name="skipped" type="xs:string"/>
+    <xs:element name="system-err" type="xs:string"/>
+    <xs:element name="system-out" type="xs:string"/>
+
+    <xs:element name="testcase">
+        <xs:complexType>
+             <xs:sequence>
+            <xs:choice>
+                <xs:element ref="error" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="skipped" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="failure" minOccurs="0" maxOccurs="1"/>
+            </xs:choice>
+            <xs:element ref="system-out" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="system-err" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required">
+                 <xs:annotation>
+                    <xs:appinfo>
+                        <ben:id/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="assertions" type="xs:string" use="optional"/>
+            <!-- changed time to required -->
+            <xs:attribute name="time" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="decimal" min="0" max="500" distribution="cumulated"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="classname" type="xs:string" use="optional"/>
+            <xs:attribute name="status" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="testsuite">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="properties" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="testcase">
+                    <xs:annotation>
+                        <xs:appinfo>
+                            <ben:part minCount="1000" maxCount="1000"/>
+                        </xs:appinfo>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="system-out" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="system-err" minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute pattern="com\.xebialabs\.xltest\.reference\.mvntestng\.p2\.MvnJunit2Test"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="tests" type="xs:string" use="required">
+                 <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="integer" min="1000" max="1000"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="failures" type="xs:string" use="optional">
+                 <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="integer" min="0" max="300" distribution="cumulated"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="errors" type="xs:string" use="optional">
+                 <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="integer" min="0" max="300" distribution="cumulated"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="time" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="decimal" min="0" max="5000" distribution="cumulated"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="disabled" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="integer" min="0" max="300" distribution="cumulated"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="skipped" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute type="integer" min="0" max="300" distribution="cumulated"/>
+                    </xs:appinfo>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="timestamp" type="xs:string" use="optional">
+                <xs:annotation>
+                    <xs:appinfo>
+                        <ben:attribute pattern="2015\-10\-08T13:55:13"/>
+                    </xs:appinfo>
+               </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="hostname" type="xs:string" use="optional"/>
+            <xs:attribute name="id" type="xs:string" use="optional"/>
+            <xs:attribute name="package" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="testsuites">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="testsuite" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="optional"/>
+            <xs:attribute name="time" type="xs:string" use="optional"/>
+            <xs:attribute name="tests" type="xs:string" use="optional"/>
+            <xs:attribute name="failures" type="xs:string" use="optional"/>
+            <xs:attribute name="disabled" type="xs:string" use="optional"/>
+            <xs:attribute name="errors" type="xs:string" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
+
+</xs:schema>
