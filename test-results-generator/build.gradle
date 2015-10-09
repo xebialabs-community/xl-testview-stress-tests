@@ -1,0 +1,19 @@
+group 'com.xebialabs.xltest'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.databene:databene-commons:1.0.5'
+    compile 'org.databene:databene-benerator:0.9.8'
+    compile 'org.databene:dbsanity:0.9.4'
+    compile 'org.databene:jdbacl:0.8.19'
+    compile 'org.databene:databene-webdecs:0.6.10'
+    compile 'org.databene:contiperf:2.3.4'
+}
