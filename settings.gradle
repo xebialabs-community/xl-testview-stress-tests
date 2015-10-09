@@ -1,3 +1,4 @@
 rootProject.name = 'xl-testview-stress-tests'
 include 'data-generator'
 include 'runner'
+include 'test-results-generator'

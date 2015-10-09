@@ -3,6 +3,7 @@ package generator;
 import org.databene.benerator.main.XmlCreator;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,7 +11,8 @@ import java.util.List;
 
 public class Generator {
 
-    public static final String JUNIT_XSD = "src/main/resources/junit.xsd";
+//    public static final URL JUNIT_XSD = Generator.class.getResource("/junit.xsd");
+    public static final String JUNIT_XSD = "test-results-generator/src/main/resources/junit.xsd";
     public static final String XML_ROOT_ELEMENT = "testsuite";
     public static final String DEFAULT_FILE_FORMAT = "TEST-{0}.xml";
     public static final String OUTPUT_DIRECTORY_PREFIX = "xltvgenerator";
@@ -38,7 +40,7 @@ public class Generator {
                     outputFilenameFormat = DEFAULT_FILE_FORMAT;
                 }
 
-                XmlCreator.createXMLFiles(JUNIT_XSD,
+                XmlCreator.createXMLFiles(JUNIT_XSD.toString(),
                         XML_ROOT_ELEMENT,
                         dir.toString() + "/" + outputFilenameFormat,
                         numOutputFiles,
@@ -46,7 +48,7 @@ public class Generator {
 
                 outputDirs.add(dir);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
