@@ -11,7 +11,7 @@ class TestSpecificationGenerator {
 
     val p = Project("--", "Project A")
 
-    val ts = PassiveTestSpecification("--", "jUnit test", "xlt.DefaultFunctionalTestsQualifier", "xlt.JUnit")
+    val ts = PassiveTestSpecification("--", "jUnit test", Some("xlt.DefaultFunctionalTestsQualifier"), "xlt.JUnit")
 
     CompleteProject(p, List(ts))
   }

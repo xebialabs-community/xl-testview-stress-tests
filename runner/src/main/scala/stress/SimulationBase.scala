@@ -13,7 +13,7 @@ abstract class SimulationBase(scenarios: List[ScenarioBuilder]) extends Simulati
   setUp(
     scenarios.map(
       _.inject(
-        atOnceUsers(1),
+        atOnceUsers(RunnerConfig.simulations.users),
         nothingFor(RunnerConfig.simulations.postWarmUpPause),
         rampUsers(RunnerConfig.input.users) over RunnerConfig.simulations.rampUpPeriod
       )

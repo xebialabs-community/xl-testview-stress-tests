@@ -3,7 +3,8 @@ package stress.utils
 import com.typesafe.scalalogging.LazyLogging
 import io.gatling.app.Gatling
 import io.gatling.core.scenario.Simulation
-import stress.{DashboardSimulation, ImportSimulation, ProjectSimulation}
+import stress.simulations.DashboardSimulation
+import stress.ProjectSimulation
 
 import scala.util.{Failure, Success, Try}
 

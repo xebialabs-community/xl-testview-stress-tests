@@ -7,11 +7,11 @@ trait XltJsonProtocol extends DefaultJsonProtocol with AdditionalFormats {
   this: ProductFormatsInstances =>
 
   implicit val projectFormat = jsonFormat4(Project.apply)
-  implicit val passiveTestSpecificationFormat = jsonFormat5(PassiveTestSpecification.apply)
+  implicit val passiveTestSpecificationFormat = jsonFormat8(PassiveTestSpecification.apply)
   implicit val activeTestSpecificationFormat = jsonFormat8(ActiveTestSpecification.apply)
   implicit val executableTestSpecificationFormat = jsonFormat11(ExecutableTestSpecification.apply)
-  implicit val dashboardFormat = jsonFormat6(Dashboard.apply)
   implicit val dashboardTileFormat = jsonFormat12(DashboardTile.apply)
+  implicit val dashboardFormat = jsonFormat6(Dashboard.apply)
 
   implicit object CiProtocol extends RootJsonFormat[Ci] {
     def read(json: JsValue): Ci = {
@@ -24,8 +24,8 @@ trait XltJsonProtocol extends DefaultJsonProtocol with AdditionalFormats {
         case ci: PassiveTestSpecification => ci.toJson
         case ci: ActiveTestSpecification => ci.toJson
         case ci: ExecutableTestSpecification => ci.toJson
-        case ci: Dashboard => ci.toJson
         case ci: DashboardTile => ci.toJson
+        case ci: Dashboard => ci.toJson
         case _ => serializationError(s"Undefined CI type ${ci.getClass}")
       }
     }

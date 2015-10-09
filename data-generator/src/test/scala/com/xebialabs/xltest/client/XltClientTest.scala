@@ -5,13 +5,12 @@ import com.xebialabs.xltest.generator.TestSpecificationGenerator
 import com.xebialabs.xltest.json.XltJsonProtocol
 import com.xebialabs.xltest.support.UnitTestSugar
 import org.junit.runner.RunWith
-import org.scalatest.{BeforeAndAfterEach, BeforeAndAfter}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.junit.JUnitRunner
 import spray.http.{HttpResponse, StatusCodes}
-import spray.json._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @RunWith(classOf[JUnitRunner])
 class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAfterEach {
@@ -25,29 +24,29 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
   }
 
 
-  def deleteProject(project: String): Unit = {
-    val entity = client.findProject(project).futureValue.entity
+  def deleteProject(projectName: String): Unit = {
+    try {
+      val projects = client.findProject(projectName).futureValue
 
-    val toOption = entity.toOption
-
-    toOption.foreach(o => {
-      val projects: Seq[Project] = o.asString.parseJson.convertTo[Seq[Project]]
-      projects.foreach(p => {
-        p.name match {
-          case o: Some[String] => client.removeProject(o.get)
-          case None =>
-        }
-      })
-
-    })
+      projects.foreach { p =>
+        client.removeProject(p.name.get)
+      }
+    } catch {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   describe("XLT client") {
+    //    it("should find a project") {
+    //      val projects: Future[Seq[Project]] = client.findProject("MyProject")
+    //      projects.futureValue.head.title shouldBe "MyProject"
+    //    }
+
     it("should create a project") {
       val project = new Project("3", "MyProject")
 
-      val createResponse = client.createProject(project).futureValue
-      createResponse.status shouldBe StatusCodes.Created
+      val createdProject = client.createProject(project).futureValue
+      createdProject.name shouldBe defined
 
       val removeResponse = client.removeProject(project.id).futureValue
       removeResponse.status shouldBe StatusCodes.NoContent
@@ -56,16 +55,17 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
     it("should create a test specification") {
       val project = new Project("3", "MyProject")
 
-      val createResponse = client.createProject(project).futureValue
-      createResponse.status shouldBe StatusCodes.Created
+      val createdProject = client.createProject(project).futureValue
+      createdProject.name shouldBe defined
+      val projectName = createdProject.name.get
 
-      val entity = createResponse.entity
-      val project1 = entity.asString.parseJson.convertTo[Project]
-
-      val specification: PassiveTestSpecification = new PassiveTestSpecification("---", "Test Spec A", "xlt.DefaultFunctionalTestsQualifier", "xlt.JUnit")
-      val createdResponse2 = client.createTestSpecification(
-        specification, project1.name.get).futureValue
+      val specification: PassiveTestSpecification = new PassiveTestSpecification("---", "Test Spec A", Some("xlt.DefaultFunctionalTestsQualifier"), "xlt.JUnit")
+      val createdResponse2 = client.createTestSpecification(specification, projectName).futureValue
       createdResponse2.status shouldBe StatusCodes.Created
+
+      val specifications: Seq[BaseTestSpecification] = client.findTestSpecifications(projectName).futureValue
+
+      specifications.size shouldBe 1
 
       val removeResponse = client.removeProject(project.id).futureValue
       removeResponse.status shouldBe StatusCodes.NoContent

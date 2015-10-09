@@ -17,11 +17,11 @@ package object domain {
   }
 
   trait BaseTestSpecification extends Ci {
-    def id: String
+    def id: String = "---"
 
     def title: String
 
-    def qualificationType: String
+    def qualificationType: Option[String]
   }
 
   case class CompleteProject(project: Project,
@@ -34,13 +34,16 @@ package object domain {
 
   case class PassiveTestSpecification(override val id: String,
                                       override val title: String,
-                                      override val qualificationType: String,
+                                      override val qualificationType: Option[String],
                                       testToolName: String,
-                                      `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
+                                      `type`: String = "xlt.PassiveTestSpecification",
+                                      hasRuns: Boolean = false,
+                                      importable: Boolean = false,
+                                      executable: Boolean = false) extends BaseTestSpecification
 
   case class ActiveTestSpecification(override val id: String,
                                      override val title: String,
-                                     override val qualificationType: String,
+                                     override val qualificationType: Option[String],
                                      testToolName: String,
                                      searchPattern: String,
                                      workingDirectory: String,
@@ -49,7 +52,7 @@ package object domain {
 
   case class ExecutableTestSpecification(override val id: String,
                                          override val title: String,
-                                         override val qualificationType: String,
+                                         override val qualificationType: Option[String],
                                          testToolName: String,
                                          searchPattern: String,
                                          workingDirectory: String,
@@ -77,6 +80,6 @@ package object domain {
                            reportType: String,
                            reportName: String,
                            `type`: String = "xlt.DashboardTile",
-                           showCaseDate: Boolean = false) extends Ci
+                           showCaseDate: Option[Boolean] = Some(false)) extends Ci
 
 }

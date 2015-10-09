@@ -80,6 +80,9 @@ object RunnerConfig extends LazyLogging {
       val repeats = runnerConfig.getInt("simulations.realistic.repeats")
 
     }
+
+    val users = runnerConfig.getInt("simulations.users")
+
   }
 
 

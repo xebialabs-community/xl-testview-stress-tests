@@ -9,5 +9,4 @@ import scala.language.{implicitConversions, postfixOps}
 
 
 class ProjectSimulation extends SimulationBase(createProjectScenario)
-class ImportSimulation extends SimulationBase(importTestSpecData)
-class DashboardSimulation extends SimulationBase(browseDashboards)
+

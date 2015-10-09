@@ -10,7 +10,6 @@ import com.xebialabs.xltest.json.XltJsonProtocol
 import spray.client.pipelining._
 import spray.http.{BasicHttpCredentials, _}
 import spray.httpx.SprayJsonSupport._
-import spray.httpx.unmarshalling._
 import spray.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -43,7 +42,7 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
   implicit val timeout: Timeout = Timeout(30 days)
   val requestCounter = new AtomicInteger(0)
 
-  val projectUri :Uri = s"$apiUrl/api/internal/projects"
+  val projectUri: Uri = s"$apiUrl/api/internal/projects"
 
   private val strictPipeline = (req: HttpRequest) => {
     val requestNum = requestCounter.getAndIncrement()
@@ -60,24 +59,27 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
       sendReceive ~>
       logResponse(loggingResp)
 
+
     XltClient.failNonSuccessfulResponses(pipeline(req))
   }
 
-  def createCis(cis: Seq[Ci]): Seq[Future[HttpResponse]] = {
+  def createCis(cis: Seq[Ci]): Seq[Future[Ci]] = {
     cis.map(createCi)
   }
 
-  def createCi(ci: Ci): Future[HttpResponse] = {
+  def createCi(ci: Ci): Future[Ci] = {
     ci match {
       case p: Project => createProject(p)
     }
   }
 
-  def createProject(p: Project): Future[HttpResponse] = strictPipeline(Post(s"$apiUrl/api/internal/projects", p))
+  def createProject(p: Project): Future[Project] = strictPipeline(Post(s"$apiUrl/api/internal/projects", p)).map(_ ~> unmarshal[Project])
 
   def removeProject(id: String): Future[HttpResponse] = strictPipeline(Delete(s"$apiUrl/api/internal/projects/$id"))
 
-  def findProject(title: String): Future[HttpResponse] = strictPipeline(Get(projectUri withQuery ("title" -> title)))
+  def findProject(title: String): Future[Seq[Project]] = {
+    strictPipeline(Get(projectUri withQuery ("title" -> title))).map(_ ~> unmarshal[Seq[Project]])
+  }
 
   def createTestSpecification(specification: ExecutableTestSpecification, projectName: String): Future[HttpResponse] = strictPipeline(
     Post(s"$apiUrl/api/internal/projects/$projectName/testspecifications", specification))
@@ -88,6 +90,9 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
   def createTestSpecification(specification: PassiveTestSpecification, projectName: String): Future[HttpResponse] = strictPipeline(
     Post(s"$apiUrl/api/internal/projects/$projectName/testspecifications", specification))
 
+  def findTestSpecifications(projectName: String): Future[Seq[BaseTestSpecification]] = strictPipeline(
+    Get(s"$apiUrl/api/internal/projects/$projectName/testspecifications")).map(_ ~> unmarshal[Seq[PassiveTestSpecification]])
+
   def removeTestSpecification(id: String, projectName: String): Future[HttpResponse] = strictPipeline(
     Delete(s"$apiUrl/api/internal/projects/$projectName/testspecifications/$id"))
 
@@ -95,8 +100,7 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
     val f = createProject(cp.project)
 
     val tsFuture = f flatMap {
-      case hp: HttpResponse =>
-        val project = hp.entity.as[Project].right.get
+      case project: Project =>
         val id = project.name.get
         val tsCreationFutures: Seq[Future[HttpResponse]] = cp.testSpecifications.map {
           case ts: PassiveTestSpecification => createTestSpecification(ts, id)
@@ -109,5 +113,5 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
     tsFuture
   }
 
-  def listDashboards(): Future[HttpResponse] = strictPipeline(Get(s"$apiUrl/api/internal/dashboards"))
+  def listDashboards(): Future[Seq[Dashboard]] = strictPipeline(Get(s"$apiUrl/api/internal/dashboards")).map(_ ~> unmarshal[Seq[Dashboard]])
 }
