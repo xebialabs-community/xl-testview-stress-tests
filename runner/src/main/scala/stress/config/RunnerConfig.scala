@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 
-import scala.concurrent.duration.{FiniteDuration, Duration}
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 /**
  * When adding a new configuration option don't forget to check that it has the same path at `runner.conf`.
@@ -20,6 +20,12 @@ object RunnerConfig extends LazyLogging {
   lazy private val runnerConfig = rootConfig.getConfig(CONFIG_OBJECT_PATH)
 
   private val durationDilation = runnerConfig.getDouble("durationDilation")
+
+  object importRuns {
+    val parallelTestSpecs = rootConfig.getInt("xl.import-runs.parallel-test-specs")
+    val filesPerTestSpec = rootConfig.getInt("xl.import-runs.files-per-test-spec")
+    val rounds = rootConfig.getInt("xl.import-runs.rounds")
+  }
 
   /**
    * This object contains public, user-facing config parameters.
@@ -62,14 +68,16 @@ object RunnerConfig extends LazyLogging {
   val taskPollDuration = duration("taskPollDuration")
 
   object queries {
+
     object search {
       val numberByPage = runnerConfig.getInt("queries.search.numberByPage")
     }
+
   }
 
   object simulations {
 
-    val postWarmUpPause =  duration("simulations.postWarmUpPause")
+    val postWarmUpPause = duration("simulations.postWarmUpPause")
 
     val rampUpPeriod = duration("simulations.rampUpPeriod")
 

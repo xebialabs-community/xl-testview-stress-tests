@@ -2,6 +2,7 @@ package stress.simulations
 
 import java.nio.file.{Files, Path}
 
+import com.typesafe.scalalogging.LazyLogging
 import generator.Generator
 import io.gatling.core.Predef._
 import io.gatling.core.scenario.Simulation
@@ -9,19 +10,26 @@ import stress._
 import stress.chain.JunitGradle
 import stress.config.RunnerConfig
 import stress.simulations.ImportSimulation.testResultFeeder
-import stress.utils.{FileUtils, XmlOMatic}
+import stress.utils.{ClientUtils, FileUtils, XmlOMatic}
 
 import scala.collection.JavaConverters._
-import scala.concurrent.duration._
 import scala.xml.Node
 
-object ImportSimulation {
-  System.setProperty("javax.xml.transform.TransformerFactory", "javax.xml.transform.sax.SAXTransformerFactory")
+object ImportSimulation extends LazyLogging {
+
+  /*
+  Somehow scala by default uses another XML handler than Java. Scala uses the IdentityTransformerHandler, while java uses a TransformerHandlerImpl.
+  The identityTransformerHandler crashes when using benerator
+  Setting this system property overrides the default scala factory by the java one.
+   */
+  System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl")
 
   val generator = new Generator()
+  val clientUtils = new ClientUtils()
 
   val testResultFeeder = Iterator.continually(Map("filename" -> {
-    val data: List[Path] = generator.createTestData(10, 1, null).asScala.toList
+    logger.info("Generating another test set")
+    val data: List[Path] = generator.createTestData(RunnerConfig.importRuns.filesPerTestSpec, 1).asScala.toList
     val updatedXml: List[List[Node]] = data.map(dir => {
       val xmlFiles: List[Path] = scanDirectories(dir)
       val xmlNodes: List[Node] = loadXmlFiles(xmlFiles)
@@ -47,19 +55,46 @@ object ImportSimulation {
     xmlFiles
   }
 
+
+  def testSpecFeeder(projectName: String) = {
+    val clientUtils = new ClientUtils
+    val ids: Seq[String] = clientUtils.testSpecIds(projectName)
+    val map: Array[Map[String, String]] = ids.map(id => Map("testSpecId" -> id))(collection.breakOut)
+    map.queue
+    //    val testSpecFeeder = Iterator.continually(Map("testSpecId" -> Random.shuffle(ids).head))
+    //    testSpecFeeder
+  }
+
+  def testSpecifications(projectName: String): Seq[String] = {
+    val clientUtils = new ClientUtils
+    clientUtils.testSpecIds(projectName)
+  }
+
 }
 
+/*
+.exec(session => {
+    println(session.toString)
+    session.set("testSpecId", testSpecFeeder.next())
+  })
+ */
 
 class ImportSimulation extends Simulation {
 
-  val importTestResults = scenario("Import stuff").feed(testResultFeeder).exec(JunitGradle.importTestData)
+  val projectName = ImportSimulation.clientUtils.prepareProject()
+  val testSpecFeeder = ImportSimulation.testSpecFeeder(projectName)
+
+  var testSpecs = ImportSimulation.testSpecifications(projectName)
+  val importTestResults = scenario("Import stuff").feed(testSpecFeeder)
+    .repeat(RunnerConfig.importRuns.rounds) {
+      feed(testResultFeeder).exec(JunitGradle.importTestData)
+    }
 
   setUp(
     importTestResults.inject(
-      rampUsers(RunnerConfig.simulations.users) over (10 seconds),
       nothingFor(RunnerConfig.simulations.postWarmUpPause),
-      rampUsers(RunnerConfig.input.users) over RunnerConfig.simulations.rampUpPeriod
-
+      rampUsers(RunnerConfig.importRuns.parallelTestSpecs) over RunnerConfig.simulations.rampUpPeriod
+      //      rampUsers(50) over RunnerConfig.simulations.rampUpPeriod
     )
   ).protocols(httpProtocol)
 }

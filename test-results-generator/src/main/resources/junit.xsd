@@ -73,7 +73,7 @@
             <xs:attribute name="time" type="xs:string" use="required">
                 <xs:annotation>
                     <xs:appinfo>
-                        <ben:attribute type="decimal" min="0" max="500" distribution="cumulated"/>
+                        <ben:attribute type="decimal" min="0" max="3" distribution="cumulated"/>
                     </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>
@@ -89,7 +89,7 @@
                 <xs:element ref="testcase">
                     <xs:annotation>
                         <xs:appinfo>
-                            <ben:part minCount="1000" maxCount="1000"/>
+                            <ben:part minCount="5" maxCount="30"/>
                         </xs:appinfo>
                     </xs:annotation>
                 </xs:element>
@@ -127,7 +127,7 @@
             <xs:attribute name="time" type="xs:string" use="required">
                 <xs:annotation>
                     <xs:appinfo>
-                        <ben:attribute type="decimal" min="0" max="5000" distribution="cumulated"/>
+                        <ben:attribute type="decimal" min="0" max="500" distribution="cumulated"/>
                     </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>

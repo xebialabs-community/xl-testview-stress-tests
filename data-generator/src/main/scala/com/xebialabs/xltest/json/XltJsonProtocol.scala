@@ -7,9 +7,9 @@ trait XltJsonProtocol extends DefaultJsonProtocol with AdditionalFormats {
   this: ProductFormatsInstances =>
 
   implicit val projectFormat = jsonFormat4(Project.apply)
-  implicit val passiveTestSpecificationFormat = jsonFormat8(PassiveTestSpecification.apply)
-  implicit val activeTestSpecificationFormat = jsonFormat8(ActiveTestSpecification.apply)
-  implicit val executableTestSpecificationFormat = jsonFormat11(ExecutableTestSpecification.apply)
+  implicit val passiveTestSpecificationFormat = jsonFormat9(PassiveTestSpecification.apply)
+  implicit val activeTestSpecificationFormat = jsonFormat9(ActiveTestSpecification.apply)
+  implicit val executableTestSpecificationFormat = jsonFormat12(ExecutableTestSpecification.apply)
   implicit val dashboardTileFormat = jsonFormat12(DashboardTile.apply)
   implicit val dashboardFormat = jsonFormat6(Dashboard.apply)
 

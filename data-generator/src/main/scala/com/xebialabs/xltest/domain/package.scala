@@ -22,6 +22,9 @@ package object domain {
     def title: String
 
     def qualificationType: Option[String]
+
+    def name: Option[String]
+
   }
 
   case class CompleteProject(project: Project,
@@ -32,25 +35,30 @@ package object domain {
                      name: Option[String] = None,
                      `type`: String = "xlt.Project") extends Ci
 
-  case class PassiveTestSpecification(override val title: String,
+  case class PassiveTestSpecification(
+                                      override val title: String,
                                       override val qualificationType: Option[String],
                                       testToolName: String,
+                                      override val name: Option[String] = None,
                                       override val id: String = "---",
                                       `type`: String = "xlt.PassiveTestSpecification",
                                       hasRuns: Boolean = false,
                                       importable: Boolean = false,
                                       executable: Boolean = false) extends BaseTestSpecification
 
-  case class ActiveTestSpecification(override val id: String,
+  case class ActiveTestSpecification( override val id: String,
                                      override val title: String,
                                      override val qualificationType: Option[String],
                                      testToolName: String,
                                      searchPattern: String,
                                      workingDirectory: String,
                                      host: String,
+                                     override val name: Option[String] = None,
+
                                      `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
 
-  case class ExecutableTestSpecification(override val id: String,
+  case class ExecutableTestSpecification(
+                                         override val id: String,
                                          override val title: String,
                                          override val qualificationType: Option[String],
                                          testToolName: String,
@@ -60,6 +68,8 @@ package object domain {
                                          commandLine: String,
                                          timeOut: Int,
                                          scriptLocation: String,
+                                         override val name: Option[String] = None,
+
                                          `type`: String = "xlt.PassiveTestSpecification") extends BaseTestSpecification
 
   case class Dashboard(title: String,

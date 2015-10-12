@@ -21,6 +21,8 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
   override def beforeEach() {
     deleteProject("MyProject")
     deleteProject("Project A")
+    deleteProject("Project X")
+
   }
 
 
@@ -77,6 +79,20 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
       val createResponse = client.createCompleteProject(set).futureValue
 
       createResponse.seq.head.status shouldBe StatusCodes.Created
+    }
+
+    it("should create a big project and read the test specifications") {
+      val set = generator.generateLargeJunitTestSet("Project X", 50)
+      val createResponse = client.createCompleteProject(set).futureValue
+      createResponse.seq.head.status shouldBe StatusCodes.Created
+
+      val projects = client.findProject("Project X").futureValue
+
+      val specifications: Seq[BaseTestSpecification] = client.findTestSpecifications(projects.seq.head.name.get).futureValue
+
+      specifications.size shouldBe 50
+
+      deleteProject("Project X")
     }
   }
 

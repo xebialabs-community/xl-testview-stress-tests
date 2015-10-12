@@ -1,14 +1,9 @@
 package stress.chain
 
-import java.nio.file.{Files, Path}
-
-import generator.Generator
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import stress.utils.{FileUtils, XmlOMatic}
 
-import scala.collection.JavaConverters._
-import scala.xml.{Elem, Node}
+import scala.xml.Elem
 
 object JunitGradle {
 
@@ -30,17 +25,23 @@ object JunitGradle {
   }
     """
 
-  val testSpecFeeder = Iterator.continually(Map("testSpecId" -> "40758f33-8aa0-4cc5-9cc4-ee37a73e2740"))
-
+  //  val testSpecFeeder = Iterator.continually(Map("testSpecId" -> "40758f33-8aa0-4cc5-9cc4-ee37a73e2740"))
 
 
   def importTestData = {
-    feed(testSpecFeeder)
-      .exec(http("Run import")
-        .post("/api/internal/import/${testSpecId}")
-        .header("Content-Type", "multipart/mixed")
-        .bodyPart(StringBodyPart("metadata", metadata).contentType("application/json"))
-        .bodyPart(RawFileBodyPart("test-results.zip", "${filename}").contentType("application/zip")))
+
+
+    exec(http("Run import")
+      .post("/api/internal/import/${testSpecId}")
+      .header("Content-Type", "multipart/mixed")
+      .bodyPart(StringBodyPart("metadata", metadata).contentType("application/json"))
+      .bodyPart(RawFileBodyPart("test-results.zip", "${filename}").contentType("application/zip")))
   }
 
+
+  def importALot = {
+    repeat(100) {
+      importTestData
+    }
+  }
 }

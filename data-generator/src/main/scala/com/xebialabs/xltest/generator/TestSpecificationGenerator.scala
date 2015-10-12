@@ -23,7 +23,7 @@ class TestSpecificationGenerator {
     val p = Project(projectName)
 
     val specifications: IndexedSeq[PassiveTestSpecification] =
-      for (i <- 0 to nrOfSpecs) yield PassiveTestSpecification("jUnit test", Some("xlt.DefaultFunctionalTestsQualifier"), "xlt.JUnit")
+      for (i <- 1 to nrOfSpecs) yield PassiveTestSpecification(f"testspec $i%02d", Some("xlt.DefaultFunctionalTestsQualifier"), "xlt.JUnit")
 
     CompleteProject(p, specifications)
 
