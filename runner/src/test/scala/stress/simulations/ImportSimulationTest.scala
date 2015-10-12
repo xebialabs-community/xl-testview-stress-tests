@@ -9,8 +9,7 @@ class ImportSimulationTest extends UnitTestSugar {
 
   describe("XLT client") {
     it("Should generate files") {
-      val simulation = new ImportSimulation
-      val next: Map[String, String] = simulation.testResultFeeder.next()
+      val next: Map[String, String] = ImportSimulation.testResultFeeder.next()
 
       println("--")
     }

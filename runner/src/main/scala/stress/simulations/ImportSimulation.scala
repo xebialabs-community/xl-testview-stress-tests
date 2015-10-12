@@ -8,15 +8,17 @@ import io.gatling.core.scenario.Simulation
 import stress._
 import stress.chain.JunitGradle
 import stress.config.RunnerConfig
+import stress.simulations.ImportSimulation.testResultFeeder
 import stress.utils.{FileUtils, XmlOMatic}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 import scala.xml.Node
 
-class ImportSimulation extends Simulation {
-  val generator = new Generator()
+object ImportSimulation {
+  System.setProperty("javax.xml.transform.TransformerFactory", "javax.xml.transform.sax.SAXTransformerFactory")
 
+  val generator = new Generator()
 
   val testResultFeeder = Iterator.continually(Map("filename" -> {
     val data: List[Path] = generator.createTestData(10, 1, null).asScala.toList
@@ -44,6 +46,11 @@ class ImportSimulation extends Simulation {
     val xmlFiles: List[Path] = Files.newDirectoryStream(dir).asScala.toList
     xmlFiles
   }
+
+}
+
+
+class ImportSimulation extends Simulation {
 
   val importTestResults = scenario("Import stuff").feed(testResultFeeder).exec(JunitGradle.importTestData)
 
