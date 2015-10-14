@@ -1,19 +1,33 @@
 package generator;
 
-import org.databene.benerator.main.XmlCreator;
-
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import org.databene.benerator.main.XmlCreator;
 
 public class Generator {
 
     private static final String XML_ROOT_ELEMENT = "testsuite";
     private static final String DEFAULT_FILE_FORMAT = "TEST-{0}.xml";
     private static final String OUTPUT_DIRECTORY_PREFIX = "xltvgenerator";
-    private static final String JUNIT_XSD = "junit.xsd";
+    private static final String JUNIT_XSD = "/junit.xsd";
+
+    final Path tempFile;
+
+    public Generator() {
+        try {
+            final InputStream resourceAsStream = this.getClass().getResourceAsStream(JUNIT_XSD);
+            tempFile = Files.createTempFile("my-junit", "xsd");
+            Files.copy(resourceAsStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Creates test results data based on JUnit gradle reports.
@@ -28,18 +42,20 @@ public class Generator {
      */
     public List<Path> createTestData(int numOutputFiles, int numOutputDirs, String outputFilenameFormat) {
         List<Path> outputDirs = new ArrayList<>();
-        String xsdFilename = this.getClass().getClassLoader().getResource(JUNIT_XSD).getFile();
 
-        for (int i=0; i<numOutputDirs; i++) {
+
+        for (int i = 0; i < numOutputDirs; i++) {
             // create output folder
             try {
+
+
                 Path dir = Files.createTempDirectory(OUTPUT_DIRECTORY_PREFIX);
 
                 if (outputFilenameFormat == null || outputFilenameFormat.isEmpty()) {
                     outputFilenameFormat = DEFAULT_FILE_FORMAT;
                 }
 
-                XmlCreator.createXMLFiles(xsdFilename,
+                XmlCreator.createXMLFiles(tempFile.toString(),
                         XML_ROOT_ELEMENT,
                         dir.toString() + "/" + outputFilenameFormat,
                         numOutputFiles,
@@ -59,8 +75,8 @@ public class Generator {
      * Returns a list of Path objects which point to temp directories
      * containing the results
      *
-     * @param numOutputFiles       Number of output files
-     * @param numOutputDirs        Number of output directories
+     * @param numOutputFiles Number of output files
+     * @param numOutputDirs  Number of output directories
      */
     public List<Path> createTestData(int numOutputFiles, int numOutputDirs) {
         return createTestData(numOutputFiles, numOutputDirs, null);

@@ -20,7 +20,6 @@ class DashboardSimulation extends Simulation {
 
   setUp(
     browseDashboards.inject(
-      rampUsers(RunnerConfig.dashboards.users) over(10 seconds),
       nothingFor(RunnerConfig.dashboards.postWarmUpPause),
       rampUsers(RunnerConfig.dashboards.users) over RunnerConfig.dashboards.rampUpPeriod
 
