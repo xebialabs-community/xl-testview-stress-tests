@@ -2,7 +2,7 @@ package stress.config
 
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 
 import scala.concurrent.duration.{Duration, FiniteDuration}
@@ -13,95 +13,57 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
  */
 object RunnerConfig extends LazyLogging {
 
-  private val CONFIG_OBJECT_PATH = "xl.runner"
 
   lazy private val rootConfig = ConfigFactory.load("runner.conf")
 
-  lazy private val runnerConfig = rootConfig.getConfig(CONFIG_OBJECT_PATH)
 
-  private val durationDilation = runnerConfig.getDouble("durationDilation")
+  private val durationDilation = rootConfig.getDouble("duration-dilation")
 
-  object importRuns {
-    val parallelTestSpecs = rootConfig.getInt("xl.import-runs.parallel-test-specs")
-    val filesPerTestSpec = rootConfig.getInt("xl.import-runs.files-per-test-spec")
-    val rounds = rootConfig.getInt("xl.import-runs.rounds")
-  }
+
+  /*
+  The common server options
+   */
+  val simulation = rootConfig.getString("simulation")
+
+  def baseUrls: List[String] = rootConfig.getString("baseUrl").split(",").toList
+
+  val username = rootConfig.getString("username")
+
+  val password: String = rootConfig.getString("password")
 
   /**
-   * This object contains public, user-facing config parameters.
+   * The simulation specific options
    */
-  object input {
-
-    val users = rootConfig.getInt("xl.runner.input.users")
-
-    def baseUrls: List[String] = runnerConfig.getString("input.baseUrl").split(",").toList
-
-    val username = runnerConfig.getString("input.username")
-
-    val password = runnerConfig.getString("input.password")
-
-    val teams = runnerConfig.getInt("input.teams")
-
-    val ops = runnerConfig.getInt("input.ops")
-
-    val releaseManagers = runnerConfig.getInt("input.releaseManagers")
-
-    val sshHost = runnerConfig.getString("input.sshHost")
-
-    val sshUser = runnerConfig.getString("input.sshUser")
-
-    val sshPassword = runnerConfig.getString("input.sshPassword")
+  object projects {
+    private val sim = rootConfig.getConfig("sim.projects")
+    val users = sim.getInt("users")
+    val rampUpPeriod = duration(sim, "ramp-up-period")
   }
 
-  val releaseManagerPauseMin = duration("releaseManagerPauseMin")
-
-  val releaseManagerPauseMax = duration("releaseManagerPauseMax")
-
-  val opsPauseMin = duration("opsPauseMin")
-
-  val opsPauseMax = duration("opsPauseMax")
-
-  val devPause = duration("devPause")
-
-  val taskPollPause = duration("taskPollPause")
-
-  val taskPollDuration = duration("taskPollDuration")
-
-  object queries {
-
-    object search {
-      val numberByPage = runnerConfig.getInt("queries.search.numberByPage")
-    }
-
+  object dashboards {
+    private val sim = rootConfig.getConfig("sim.dashboards")
+    val users = sim.getInt("users")
+    val rampUpPeriod = duration(sim, "ramp-up-period")
+    val postWarmUpPause = duration(sim, "post-warm-up-pause")
   }
 
-  object simulations {
-
-    val postWarmUpPause = duration("simulations.postWarmUpPause")
-
-    val rampUpPeriod = duration("simulations.rampUpPeriod")
-
-    object realistic {
-
-      val rampUpPeriod = duration("simulations.realistic.rampUpPeriod")
-
-      val repeats = runnerConfig.getInt("simulations.realistic.repeats")
-
-    }
-
-    val users = runnerConfig.getInt("simulations.users")
-
+  object importRuns {
+    private val sim = rootConfig.getConfig("sim.import-runs")
+    val parallelTestSpecs = sim.getInt("parallel-test-specs")
+    val filesPerTestSpec = sim.getInt("files-per-test-spec")
+    val rounds = sim.getInt("rounds")
+    val rampUpPeriod = duration(sim, "ramp-up-period")
+    val postWarmUpPause = duration(sim, "post-warm-up-pause")
   }
-
 
   // Helpers
 
   /**
    * Always use this method to calculate duration. It will also take into account [[durationDilation]].
    */
-  private def duration(path: String): FiniteDuration = {
+  private def duration(parent: Config, path: String): FiniteDuration = {
 
-    val duration = Duration(runnerConfig.getDuration(path, MILLISECONDS), MILLISECONDS)
+    val duration = Duration(parent.getDuration(path, MILLISECONDS), MILLISECONDS)
 
     duration * durationDilation match {
       case fd: FiniteDuration => fd

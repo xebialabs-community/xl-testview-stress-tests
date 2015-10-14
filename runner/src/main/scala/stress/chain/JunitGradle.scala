@@ -29,8 +29,6 @@ object JunitGradle {
 
 
   def importTestData = {
-
-
     exec(http("Run import")
       .post("/api/internal/import/${testSpecId}")
       .header("Content-Type", "multipart/mixed")

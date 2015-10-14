@@ -7,8 +7,8 @@ import scala.language.{implicitConversions, postfixOps}
 package object stress {
 
   val httpProtocol = http
-      .baseURLs(RunnerConfig.input.baseUrls)
+      .baseURLs(RunnerConfig.baseUrls)
       .acceptHeader("application/json")
-      .basicAuth(RunnerConfig.input.username, RunnerConfig.input.password)
+      .basicAuth(RunnerConfig.username, RunnerConfig.password)
       .contentTypeHeader("application/json; charset=UTF-8").build
 }

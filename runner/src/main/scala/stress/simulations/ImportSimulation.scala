@@ -15,6 +15,26 @@ import stress.utils.{ClientUtils, FileUtils, XmlOMatic}
 import scala.collection.JavaConverters._
 import scala.xml.Node
 
+class ImportSimulation extends Simulation {
+
+  val projectName = ImportSimulation.clientUtils.prepareProject()
+  val testSpecFeeder = ImportSimulation.testSpecFeeder(projectName)
+
+  var testSpecs = ImportSimulation.testSpecifications(projectName)
+  val importTestResults = scenario("Import stuff").feed(testSpecFeeder)
+    .repeat(RunnerConfig.importRuns.rounds) {
+      feed(testResultFeeder).exec(JunitGradle.importTestData)
+    }
+
+  setUp(
+    importTestResults.inject(
+      nothingFor(RunnerConfig.importRuns.postWarmUpPause),
+      rampUsers(RunnerConfig.importRuns.parallelTestSpecs) over RunnerConfig.importRuns.rampUpPeriod
+      //      rampUsers(50) over RunnerConfig.simulations.rampUpPeriod
+    )
+  ).protocols(httpProtocol)
+}
+
 object ImportSimulation extends LazyLogging {
 
   /*
@@ -61,8 +81,6 @@ object ImportSimulation extends LazyLogging {
     val ids: Seq[String] = clientUtils.testSpecIds(projectName)
     val map: Array[Map[String, String]] = ids.map(id => Map("testSpecId" -> id))(collection.breakOut)
     map.queue
-    //    val testSpecFeeder = Iterator.continually(Map("testSpecId" -> Random.shuffle(ids).head))
-    //    testSpecFeeder
   }
 
   def testSpecifications(projectName: String): Seq[String] = {
@@ -72,29 +90,4 @@ object ImportSimulation extends LazyLogging {
 
 }
 
-/*
-.exec(session => {
-    println(session.toString)
-    session.set("testSpecId", testSpecFeeder.next())
-  })
- */
 
-class ImportSimulation extends Simulation {
-
-  val projectName = ImportSimulation.clientUtils.prepareProject()
-  val testSpecFeeder = ImportSimulation.testSpecFeeder(projectName)
-
-  var testSpecs = ImportSimulation.testSpecifications(projectName)
-  val importTestResults = scenario("Import stuff").feed(testSpecFeeder)
-    .repeat(RunnerConfig.importRuns.rounds) {
-      feed(testResultFeeder).exec(JunitGradle.importTestData)
-    }
-
-  setUp(
-    importTestResults.inject(
-      nothingFor(RunnerConfig.simulations.postWarmUpPause),
-      rampUsers(RunnerConfig.importRuns.parallelTestSpecs) over RunnerConfig.simulations.rampUpPeriod
-      //      rampUsers(50) over RunnerConfig.simulations.rampUpPeriod
-    )
-  ).protocols(httpProtocol)
-}

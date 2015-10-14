@@ -5,16 +5,17 @@ import com.xebialabs.xltest.domain.{BaseTestSpecification, CompleteProject, Dash
 import com.xebialabs.xltest.generator.TestSpecificationGenerator
 import com.xebialabs.xltest.json.XltJsonProtocol
 import org.joda.time.DateTime
+import stress.config.RunnerConfig
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 import scala.util.Random
 
-class ClientUtils(url: String = "http://localhost:6516") extends XltJsonProtocol {
+class ClientUtils extends XltJsonProtocol {
   def random = new Random()
 
-  def client = new XltClient(url)
+  def client = new XltClient(RunnerConfig.baseUrls.head)
 
   def generator = new TestSpecificationGenerator()
 
@@ -37,4 +38,9 @@ class ClientUtils(url: String = "http://localhost:6516") extends XltJsonProtocol
     Await.result(client.createCompleteProject(set), 10 seconds)
     projectName
   }
+}
+
+object ClientUtils {
+  val clientUtils = new ClientUtils
+  def getDefaultClient = clientUtils.client
 }

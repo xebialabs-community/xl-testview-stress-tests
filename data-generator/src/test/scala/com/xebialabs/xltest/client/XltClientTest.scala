@@ -45,7 +45,7 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
     //    }
 
     it("should create a project") {
-      val project = new Project("3", "MyProject")
+      val project = new Project("MyProject")
 
       val createdProject = client.createProject(project).futureValue
       createdProject.name shouldBe defined
@@ -55,7 +55,7 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
     }
 
     it("should create a test specification") {
-      val project = new Project("3", "MyProject")
+      val project = new Project("MyProject")
 
       val createdProject = client.createProject(project).futureValue
       createdProject.name shouldBe defined

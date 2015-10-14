@@ -96,6 +96,12 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
   def removeTestSpecification(id: String, projectName: String): Future[HttpResponse] = strictPipeline(
     Delete(s"$apiUrl/api/internal/projects/$projectName/testspecifications/$id"))
 
+  def createDashboard(dashboard: Dashboard):Future[HttpResponse] = strictPipeline(
+    Post(s"$apiUrl/api/internal/dashboards", dashboard)
+  )
+
+  def listDashboards(): Future[Seq[Dashboard]] = strictPipeline(Get(s"$apiUrl/api/internal/dashboards")).map(_ ~> unmarshal[Seq[Dashboard]])
+
   def createCompleteProject(cp: CompleteProject): Future[Seq[HttpResponse]] = {
     val f = createProject(cp.project)
 
@@ -113,5 +119,4 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
     tsFuture
   }
 
-  def listDashboards(): Future[Seq[Dashboard]] = strictPipeline(Get(s"$apiUrl/api/internal/dashboards")).map(_ ~> unmarshal[Seq[Dashboard]])
 }

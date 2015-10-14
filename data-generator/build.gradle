@@ -25,16 +25,3 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'org.scalatest:scalatest_2.11:2.2.4'
 }
-
-def applicationJvmArgs = []
-['baseUrl', 'username', 'password', 'active-releases', 'completed-releases', 'templates'].each {
-  if (project.hasProperty(it)) {
-    applicationJvmArgs.add("-Dxl.data-generator.$it=${project.property(it)}")
-  }
-}
-
-run {
-  jvmArgs applicationJvmArgs
-}
-
-mainClassName = "com.xebialabs.xlrelease.Main"
