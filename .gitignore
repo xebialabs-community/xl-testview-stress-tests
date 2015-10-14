@@ -1,4 +1,8 @@
 results
+runner/reports
+data-generator/build
+test-results-generator/build
+runner/build
 
 # Scala
 *.class
