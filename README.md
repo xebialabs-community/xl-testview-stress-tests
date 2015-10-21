@@ -82,6 +82,9 @@ Simulates a number of users creating projects
 
 The performance reports are generated in the **runner/reports** directory. Each simulation execution will generate a separate report folder, you can browse there and open file `index.html` to view the Gatling report.
 
+## Sending results to graphite or influxdb
+
+It is possible to send realtime data to graphite or influxdb by adding the properties `-Pgatling.data.writers=console,file,graphite -Pgatling.data.graphite.host=my.monitor.host` to the gradle commandline.
 
 ## Advanced configuration parameters
 
