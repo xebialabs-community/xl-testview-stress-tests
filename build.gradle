@@ -1,10 +1,12 @@
-apply plugin: 'java'
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
 
 allprojects { Project p ->
   group = "com.xebialabs.xltest"
 
   apply plugin: "eclipse"
   apply plugin: "idea"
+
+  p.plugins.withType(JavaPlugin) {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+  }
 }
