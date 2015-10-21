@@ -1,14 +1,13 @@
 results
 runner/reports
-data-generator/build
-test-results-generator/build
-runner/build
+*/build
 
 # Scala
 *.class
 *.log
 
-# sbt specific
+# build output
+.gradle/
 .cache
 .history
 .lib/
@@ -19,10 +18,14 @@ src_managed/
 project/boot/
 project/plugins/project/
 
-# Scala-IDE specific
+# IDE
 .scala_dependencies
 .worksheet
-
+.classpath
+.project
+*.iml
+*.ipr
+*.iws
 
 # OSX
 .DS_Store
