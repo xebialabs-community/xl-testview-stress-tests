@@ -44,8 +44,7 @@ def myJvmArgs = [
   "-Dgatling.http.ahc.connectTimeout=${maxResponseSeconds * 1000}"
 ]
 
-def userProps = ['baseUrl', 'simulation', 'users', 'teams', 'ops', 'releaseManagers', 'username', 'password', 'sshHost', 'sshUser', 'sshPassword']
-project.properties.findAll { it.key.startsWith('gatling.') || it.key in userProps }.each {
+project.properties.findAll { it.key.startsWith('gatling.') || it.key.startsWith('xl') }.each {
   // TODO: would be nice to gracefully deal with gatling.http.ahc.* properties defined above
   myJvmArgs.add("-D${it.key}=${it.value}")
 }

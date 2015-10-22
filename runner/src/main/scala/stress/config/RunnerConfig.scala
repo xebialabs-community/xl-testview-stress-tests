@@ -14,7 +14,7 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
 object RunnerConfig extends LazyLogging {
 
 
-  lazy private val rootConfig = ConfigFactory.load("runner.conf")
+  lazy private val rootConfig = ConfigFactory.load("runner.conf").getConfig("xl")
 
 
   private val durationDilation = rootConfig.getDouble("duration-dilation")
