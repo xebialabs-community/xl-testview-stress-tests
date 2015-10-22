@@ -47,4 +47,5 @@ object GatlingRunner extends App with LazyLogging {
       }
   }
 
+  sys.exit(0)
 }
