@@ -6,7 +6,7 @@ repositories {
 
 ext {
   SCALA_VERSION = "2.11.6"
-  GATLING_VERSION = "2.1.4"
+  GATLING_VERSION = "2.1.7"
 }
 
 dependencies {
