@@ -23,6 +23,7 @@ project/plugins/project/
 .worksheet
 .classpath
 .project
+.idea
 *.iml
 *.ipr
 *.iws
