@@ -9,8 +9,7 @@ import scala.util.Random
 object Dashboards {
 
   private val utils: ClientUtils = new ClientUtils
-  val dashboards = utils.dashboards
-
+  lazy val dashboards = utils.dashboards
 
   val dashboardFeeder = Iterator.continually(Map("dashboardName" -> Random.shuffle(dashboards).head.name.get))
 
