@@ -17,7 +17,7 @@ package object domain {
   }
 
   trait BaseTestSpecification extends Ci {
-    def id: String = "---"
+    def id: String = ""
 
     def title: String
 
@@ -31,7 +31,7 @@ package object domain {
                              testSpecifications: Seq[BaseTestSpecification])
 
   case class Project(title: String,
-                     id: String = "--",
+                     id: String = "",
                      name: Option[String] = None,
                      `type`: String = "xlt.Project") extends Ci
 
@@ -40,7 +40,7 @@ package object domain {
                                       override val qualificationType: Option[String],
                                       testToolName: String,
                                       override val name: Option[String] = None,
-                                      override val id: String = "---",
+                                      override val id: String = "",
                                       `type`: String = "xlt.PassiveTestSpecification",
                                       hasRuns: Boolean = false,
                                       importable: Boolean = false,
@@ -75,11 +75,11 @@ package object domain {
   case class Dashboard(title: String,
                        name: Option[String] = None,
                        dashboardTiles: Seq[DashboardTile] = List.empty,
-                       id: String = "---",
+                       id: String = "",
                        autoReloadInterval: Int = 60,
                        `type`: String = "xlt.Dashboard") extends Ci
 
-  case class DashboardTile(id: String = "---",
+  case class DashboardTile(id: String = "",
                            x: Int,
                            y: Int,
                            w: Int,
