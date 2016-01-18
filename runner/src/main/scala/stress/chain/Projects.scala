@@ -15,7 +15,7 @@ object Projects {
     feed(feeder).exec(http("Create project")
       .post("/api/internal/projects")
       .body(StringBody("""{
-            "id":"---",
+            "id":"",
             "type":"xlt.Project",
             "title":"project-${projectTitle}"
           }""")).asJSON)
