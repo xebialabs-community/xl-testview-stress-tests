@@ -26,21 +26,21 @@ or on windows
 
     gradlew :runner:run [parameters]
 
-The performance tests are configurable. Options can be set using the following parameters, or by changing the `runner.conf` file. 
+The performance tests are configurable. Options can be set using the following parameters, or by changing the `runner.conf` file.
 
 - **Server URL**: The URL of the XL TestView server instance
-    - Syntax : `-PbaseUrl=http://url.to.server:6516`
+    - Syntax : `-Pxl.baseUrl=http://url.to.server:6516`
     - The default value is `http://localhost:6516`
 - **Username**: The username that will be used to connect to the server instance. This username needs "admin" permissions in order to view all data
-    - Syntax : `-Pusername=admin`
+    - Syntax : `-Pxl.username=admin`
     - The default value is `admin`
 - **Password**: The password of the user account that will be used to connect to the server instance.
-    - Syntax : `-Ppassword=password`
+    - Syntax : `-Pxl.password=password`
     - The default value is `admin`
 - **Simulation**: The simulations to execute (separated by a comma). If it is empty then `RealisticSimulation` will run.
     - Syntax :
-        - `-Psimulation=stress.simulations.ProjectSimulation` or
-        - `-Psimulation=stress.simulations.DashboardSimulation,stress.simulations.ImportSimulation`
+        - `-Pxl.simulation=stress.simulations.ProjectSimulation` or
+        - `-Pxl.simulation=stress.simulations.DashboardSimulation,stress.simulations.ImportSimulation`
     - The possible values are :
         - `stress.simulations.ProjectSimulation` : Simulates a number of users creating projects.
         - `stress.simulations.DashboardSimulation` : Simulates a number of users browsing dashboards
@@ -49,15 +49,15 @@ The performance tests are configurable. Options can be set using the following p
 
 Example:
 
-    ./gradlew :runner:run -PbaseUrl=http://localhost:6516 -Psimulation=stress.RealisticSimulation \ 
-    -Pusername=admin -Ppassword=password
+    ./gradlew :runner:run -Pxl.baseUrl=http://localhost:6516 -Pxl.simulation=stress.RealisticSimulation \
+    -Pxl.username=admin -Pxl.password=password
 
 ### Individual options for simulations
 The following options are available for all simulations:
 
 - `sim.<name>.ramp-up-period = 10 seconds` - After initialising, time to wait
 - `sim.<name>.post-warm-up-pause = 10 seconds`
-	
+
 Each simulation has its own options to set running parameters. These are in the `sim` object in the configuration file:
 
 #### ImportSimulation
@@ -77,7 +77,7 @@ Simulates a number of users creating projects
 - `stress.simulations.ProjectSimulation`
 	- `users = 5`
 
-  
+
 ## Performances Reports
 
 The performance reports are generated in the **runner/reports** directory. Each simulation execution will generate a separate report folder, you can browse there and open file `index.html` to view the Gatling report.
@@ -88,4 +88,4 @@ It is possible to send realtime data to graphite or influxdb by adding the prope
 
 ## Advanced configuration parameters
 
-`xl.runner.durationDilation` - multiplies all the durations in the runner configuration by this value. 
+`xl.runner.durationDilation` - multiplies all the durations in the runner configuration by this value.
