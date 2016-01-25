@@ -2,6 +2,7 @@ package stress.chain
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import stress.config.RunnerConfig
 import stress.utils.ClientUtils
 
 import scala.util.Random
@@ -18,7 +19,7 @@ object Dashboards {
   def browse =
     feed(dashboardFeeder).exec(http("Look at a dashboard")
       .get("/#/dashboards/${dashboardName}")
-    .headers(sentHeaders)).pause(10)
-
+    .headers(sentHeaders))
+      .pause(RunnerConfig.dashboards.minPause, RunnerConfig.dashboards.maxPause)
 
 }

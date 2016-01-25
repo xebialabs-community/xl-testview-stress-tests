@@ -43,6 +43,8 @@ object RunnerConfig extends LazyLogging {
   object dashboards {
     private val sim = rootConfig.getConfig("sim.dashboards")
     val users = sim.getInt("users")
+    val minPause = sim.getInt("min-pause")
+    val maxPause = sim.getInt("max-pause")
     val rampUpPeriod = duration(sim, "ramp-up-period")
     val postWarmUpPause = duration(sim, "post-warm-up-pause")
   }
@@ -51,6 +53,14 @@ object RunnerConfig extends LazyLogging {
     private val sim = rootConfig.getConfig("sim.import-runs")
     val parallelTestSpecs = sim.getInt("parallel-test-specs")
     val filesPerTestSpec = sim.getInt("files-per-test-spec")
+    val rounds = sim.getInt("rounds")
+    val rampUpPeriod = duration(sim, "ramp-up-period")
+    val postWarmUpPause = duration(sim, "post-warm-up-pause")
+  }
+
+  object userMix {
+    private val sim = rootConfig.getConfig("sim.user-mix")
+    val users = sim.getInt("users")
     val rounds = sim.getInt("rounds")
     val rampUpPeriod = duration(sim, "ramp-up-period")
     val postWarmUpPause = duration(sim, "post-warm-up-pause")

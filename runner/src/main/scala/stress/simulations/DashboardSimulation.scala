@@ -14,7 +14,7 @@ class DashboardSimulation extends Simulation {
 
   val client = ClientUtils.getDefaultClient
 
-  DashboardGenerator.getEmptyDashboards(10).foreach(client.createDashboard)
+  DashboardGenerator.createEmptyDashboardPayload(10).foreach(client.createDashboard)
 
   val browseDashboards = scenario("Browse dashboards").exec(Dashboards.browse)
 

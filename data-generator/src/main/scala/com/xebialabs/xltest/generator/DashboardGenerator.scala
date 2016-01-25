@@ -9,7 +9,7 @@ object DashboardGenerator {
     Dashboard("My dashboard")
   }
 
-  def getEmptyDashboards(nr: Int, uniqueValue: String = DateTime.now.toIsoDateTimeString): Seq[Dashboard] = {
+  def createEmptyDashboardPayload(nr: Int, uniqueValue: String = DateTime.now.toIsoDateTimeString): Seq[Dashboard] = {
     for (i <- 1 to nr) yield Dashboard(s"DB-$uniqueValue-$i")
   }
 }
