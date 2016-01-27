@@ -38,7 +38,7 @@ package object domain {
   case class PassiveTestSpecification(
                                       override val title: String,
                                       override val qualificationType: Option[String],
-                                      testToolName: String,
+                                      testToolName: Option[String] = None,
                                       override val name: Option[String] = None,
                                       override val id: String = "",
                                       `type`: String = "xlt.PassiveTestSpecification",
@@ -61,7 +61,7 @@ package object domain {
                                          override val id: String,
                                          override val title: String,
                                          override val qualificationType: Option[String],
-                                         testToolName: String,
+                                         testToolName: Option[String],
                                          searchPattern: String,
                                          workingDirectory: String,
                                          host: String,
@@ -84,12 +84,9 @@ package object domain {
                            y: Int,
                            w: Int,
                            h: Int,
-                           reportIcon: String,
                            title: String,
                            testSpecification: String,
                            reportType: String,
-                           reportName: String,
-                           `type`: String = "xlt.DashboardTile",
-                           showCaseDate: Option[Boolean] = Some(false)) extends Ci
+                           `type`: String = "xlt.DashboardTile") extends Ci
 
 }

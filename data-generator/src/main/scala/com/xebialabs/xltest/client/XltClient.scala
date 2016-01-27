@@ -77,8 +77,12 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
 
   def removeProject(id: String): Future[HttpResponse] = strictPipeline(Delete(s"$apiUrl/api/internal/projects/$id"))
 
-  def findProject(title: String): Future[Seq[Project]] = {
+  def findProjectByTitle(title: String): Future[Seq[Project]] = {
     strictPipeline(Get(projectUri withQuery ("title" -> title))).map(_ ~> unmarshal[Seq[Project]])
+  }
+
+  def getProjectByName(name: String): Future[Project] = {
+    strictPipeline(Get(s"$projectUri/$name" )).map(_ ~> unmarshal[Project])
   }
 
   def createTestSpecification(specification: ExecutableTestSpecification, projectName: String): Future[HttpResponse] = strictPipeline(
@@ -101,6 +105,8 @@ class XltClient(apiUrl: String, username: String = "admin", password: String = "
   )
 
   def listDashboards(): Future[Seq[Dashboard]] = strictPipeline(Get(s"$apiUrl/api/internal/dashboards")).map(_ ~> unmarshal[Seq[Dashboard]])
+
+  def listProjects(): Future[Seq[Project]] = strictPipeline(Get(s"$apiUrl/api/internal/projects")).map(_ ~> unmarshal[Seq[Project]])
 
   def createCompleteProject(cp: CompleteProject): Future[Seq[HttpResponse]] = {
     val f = createProject(cp.project)

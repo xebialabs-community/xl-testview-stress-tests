@@ -25,9 +25,6 @@ object JunitGradle {
   }
     """
 
-  //  val testSpecFeeder = Iterator.continually(Map("testSpecId" -> "40758f33-8aa0-4cc5-9cc4-ee37a73e2740"))
-
-
   def importTestData = {
     exec(http("Run import")
       .post("/api/internal/import/${testSpecId}")
@@ -37,9 +34,4 @@ object JunitGradle {
   }
 
 
-  def importALot = {
-    repeat(100) {
-      importTestData
-    }
-  }
 }

@@ -28,7 +28,7 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
 
   def deleteProject(projectName: String): Unit = {
     try {
-      val projects = client.findProject(projectName).futureValue
+      val projects = client.findProjectByTitle(projectName).futureValue
 
       projects.foreach { p =>
         client.removeProject(p.name.get)
@@ -86,7 +86,7 @@ class XltClientTest extends UnitTestSugar with XltJsonProtocol with BeforeAndAft
       val createResponse = client.createCompleteProject(set).futureValue
       createResponse.seq.head.status shouldBe StatusCodes.Created
 
-      val projects = client.findProject("Project X").futureValue
+      val projects = client.findProjectByTitle("Project X").futureValue
 
       val specifications: Seq[BaseTestSpecification] = client.findTestSpecifications(projects.seq.head.name.get).futureValue
 

@@ -1,7 +1,7 @@
 package stress.utils
 
 import com.xebialabs.xltest.client.XltClient
-import com.xebialabs.xltest.domain.{BaseTestSpecification, CompleteProject, Dashboard, Project}
+import com.xebialabs.xltest.domain._
 import com.xebialabs.xltest.generator.TestSpecificationGenerator
 import com.xebialabs.xltest.json.XltJsonProtocol
 import org.joda.time.DateTime
@@ -19,12 +19,8 @@ class ClientUtils extends XltJsonProtocol {
 
   def generator = new TestSpecificationGenerator()
 
-  private val dashboardsF: Future[Seq[Dashboard]] = client.listDashboards()
-
-  val dashboards: Seq[Dashboard] = Await.result(dashboardsF, 10 seconds)
-
-  def testSpecIds(projectName: String): Seq[String] = {
-    val projectF: Future[Seq[Project]] = client.findProject(projectName)
+  def testSpecIds(projectTitle: String): Seq[String] = {
+    val projectF: Future[Seq[Project]] = client.findProjectByTitle(projectTitle)
     val project = Await.result(projectF, 10 seconds).head
 
     val specifications: Seq[BaseTestSpecification] = Await.result(client.findTestSpecifications(project.name.get), 10 seconds)
@@ -32,11 +28,29 @@ class ClientUtils extends XltJsonProtocol {
     specifications.map(sp => sp.name.get)
   }
 
-  def prepareProject(): String = {
-    val projectName = s"Project-${DateTime.now()}"
+  def testSpecIdsByProjectName(projectName: String): Seq[String] = {
+    val projectF: Future[Project] = client.getProjectByName(projectName)
+    val project = Await.result(projectF, 10 seconds)
+
+    val specifications: Seq[BaseTestSpecification] = Await.result(client.findTestSpecifications(project.name.get), 10 seconds)
+
+    specifications.map(sp => sp.id)
+  }
+
+  def prepareProject(projectName: String = s"Project-${DateTime.now()}"): String = {
     val set: CompleteProject = generator.generateLargeJunitTestSet(projectName, 50)
     Await.result(client.createCompleteProject(set), 10 seconds)
     projectName
+  }
+
+  def listDashboards(): Seq[Dashboard] = {
+    val dashboardsF: Future[Seq[Dashboard]] = client.listDashboards()
+    Await.result(dashboardsF, 10 seconds)
+  }
+
+  def listProjects(): Seq[Project] = {
+    val projectsF: Future[Seq[Project]] = client.listProjects()
+    Await.result(projectsF, 10 seconds)
   }
 }
 

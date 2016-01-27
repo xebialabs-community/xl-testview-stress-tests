@@ -10,7 +10,7 @@ trait XltJsonProtocol extends DefaultJsonProtocol with AdditionalFormats {
   implicit val passiveTestSpecificationFormat = jsonFormat9(PassiveTestSpecification.apply)
   implicit val activeTestSpecificationFormat = jsonFormat9(ActiveTestSpecification.apply)
   implicit val executableTestSpecificationFormat = jsonFormat12(ExecutableTestSpecification.apply)
-  implicit val dashboardTileFormat = jsonFormat12(DashboardTile.apply)
+  implicit val dashboardTileFormat = jsonFormat9(DashboardTile.apply)
   implicit val dashboardFormat = jsonFormat6(Dashboard.apply)
 
   implicit object CiProtocol extends RootJsonFormat[Ci] {
