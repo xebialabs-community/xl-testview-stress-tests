@@ -1,6 +1,6 @@
 package stress.chain
 
-import com.xebialabs.xltest.domain.{DashboardTile, Dashboard}
+import com.xebialabs.xltest.domain.{DashboardTile, Dashboard, reportTypes}
 import com.xebialabs.xltest.json.XltJsonProtocol
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
@@ -13,7 +13,7 @@ import java.util.UUID
 
 object Dashboards extends XltJsonProtocol {
 
-  private val utils: ClientUtils = new ClientUtils
+  val utils = new ClientUtils
 
   lazy val dashboards = utils.listDashboards
   lazy val projects = utils.listProjects
@@ -31,14 +31,16 @@ object Dashboards extends XltJsonProtocol {
 
       .exec(http("Get dashboard CI")
         .get("/api/internal/dashboards/Configuration/Dashboards/${dashboardName}")
-        .check(jsonPath("$.dashboardTiles[*]").findAll.saveAs("dashboardTiles")))
+        .check(jsonPath("$.dashboardTiles[*]").findAll.optional.saveAs("dashboardTiles")))
+        .doIf(session => session.contains("dashboardTiles")) {
+          exec(session => session.set("reportsInDashboard", extractReports(session)))
+            .foreach("${reportsInDashboard}", "report") {
+              exec(http("Get report for dashboard")
+                .get("${report}")
+                .queryParam("maxResults", 10))
+            }
+        }
 
-      .exec(session => session.set("reportsInDashboard", extractReports(session)))
-      .foreach("${reportsInDashboard}", "report") {
-        exec(http("Get report for dashboard")
-          .get("${report}")
-          .queryParam("maxResults", 10))
-      }
 
   def addTile =
     feed(dashboardFeeder)
@@ -61,11 +63,12 @@ object Dashboards extends XltJsonProtocol {
   def addTileToDashboard(session: Session): String = {
     val dashboardJSON = session("dashboardJSON").as[String]
     val projectName =  session("projectName").as[String]
-    val testSpecId = utils.testSpecIdsByProjectName(projectName).head
+    val testSpecId = Random.shuffle(utils.testSpecIdsByProjectName(projectName)).head
     val dashboard = dashboardJSON.parseJson.convertTo[Dashboard]
+    val reportType = Random.shuffle(reportTypes).head
 
     val newDashboard: Dashboard = dashboard.copy(dashboardTiles =
-      List(DashboardTile(s"${dashboard.id}/${UUID.randomUUID().toString}", 0, 0, 5, 5, s"Tile${Random.nextInt}", testSpecId, "xlt.HealthBarometer")))
+      List(DashboardTile(s"${dashboard.id}/${UUID.randomUUID().toString}", 0, 0, 5, 5, s"Tile${Random.nextInt}", testSpecId, reportType)))
 
     newDashboard.toJson.toString
   }
@@ -74,7 +77,7 @@ object Dashboards extends XltJsonProtocol {
     val tiles: Seq[String] = session("dashboardTiles").as[Seq[String]]
     tiles
       .map(json => json.parseJson.convertTo[DashboardTile])
-      .map(tile => s"/api/internal/reports/${tile.reportType}/testspecification/${tile.testSpecification.split("""/""").last}")
+      .map(tile => s"/api/internal/reports/${tile.reportType}/testspecification/${tile.testSpecification.split("/").last}")
   }
 
 }

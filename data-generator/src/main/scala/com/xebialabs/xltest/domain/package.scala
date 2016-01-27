@@ -89,4 +89,6 @@ package object domain {
                            reportType: String,
                            `type`: String = "xlt.DashboardTile") extends Ci
 
+  val reportTypes = List("xlt.BarChart", "xlt.Pie", "xlt.HealthBarometer", "xlt.GeneralStatistics")
+
 }
