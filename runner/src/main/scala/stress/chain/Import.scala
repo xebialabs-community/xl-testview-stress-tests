@@ -46,7 +46,9 @@ object Import extends LazyLogging {
   }
 
   def scanDirectories(dir: Path): List[Path] = {
-    val xmlFiles: List[Path] = Files.newDirectoryStream(dir).asScala.toList
+    val dirStream = Files.newDirectoryStream(dir)
+    val xmlFiles: List[Path] = dirStream.asScala.toList
+    dirStream.close()
     xmlFiles
   }
 
